@@ -8,7 +8,8 @@ setup(
     license='Apache 2.0',
     install_requires = [
         'django',
-        'html5validator==0.1.14',
+        'html5validator>=0.1.14',
+        'python-slugify>=1.1.4',
     ],
     # metadata for upload to PyPI
     author = "Christine Lytwynec",
