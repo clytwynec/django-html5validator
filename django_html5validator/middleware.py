@@ -12,15 +12,22 @@ log = logging.getLogger('django_html5validator.middleware.validator')
 
 
 class DjangoHTML5Validator(object):
-
+    """
+    A Django middleware class for checking "text/html" responses for html
+    validation issues.
+    """
     def __init__(self):
-        self.report_dir = settings.DJANGO_HTML5VALIDATOR_DIR or "html_validation"
+        if hasattr(settings, "DJANGO_HTML5VALIDATOR_DIR"):
+            self.report_dir = settings.DJANGO_HTML5VALIDATOR_DIR
+        else:
+            self.report_dir = "html_validation"
+
         if not os.path.isdir(self.report_dir):
-            os.mkdir(self.report_dir)
+            os.makedirs(self.report_dir)
 
         self.html_dir = os.path.join(self.report_dir, "html")
         if not os.path.isdir(self.html_dir):
-            os.mkdir(self.html_dir)
+            os.makedirs(self.html_dir)
 
         validation_log = logging.getLogger("html5validator.validator")
         validation_log_file = logging.FileHandler(
@@ -30,7 +37,16 @@ class DjangoHTML5Validator(object):
         validation_log.propagate = False
 
     def process_response(self, request, response):
-        if "text/html" in response["content-type"].lower() and response.content:
+        """
+        Checks any "text/html" response for HTML validation issues.
+
+        An `errors.txt` file will be created in an `html_validation` directory
+        or DJANGO_HTML5VALIDATOR_DIR. This file will containing the HTML error
+        messages. An `html` folder will be created in the same directory and
+        will contain the html content that has validation issues.
+        """
+        content_type = response["content-type"].lower()
+        if "text/html" in content_type and response.content:
             html_file = os.path.join(
                 self.html_dir,
                 slugify(request.path) + '.html'
