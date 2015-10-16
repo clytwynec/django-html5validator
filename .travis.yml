@@ -6,5 +6,5 @@ branches:
 install:
     - "pip install -r test_requirements.txt"
 script:
-    - "pep8 django_html5validator/middleware.py"
-    - "nosetests django_html5validator/tests.py -v"
+    - "pep8 django_html5validator"
+    - "nosetests -v --with-coverage --cover-package=django_html5validator"

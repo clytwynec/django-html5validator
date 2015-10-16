@@ -102,7 +102,11 @@ class DjangoHTML5ValidatorTestCase(TestCase):
 
         html_file = os.path.join(self.html_dir, self.request.path + ".html")
         self.assertTrue(os.path.isfile(html_file))
-        self.assertAlmostEqual(os.path.getsize(self.errors_file), 765)
+        reported_errors = file(self.errors_file).read()
+        self.assertIn(
+            "error: Start tag seen without seeing a doctype first",
+            reported_errors
+        )
 
     @httpretty.activate
     def test_process_response_no_errors(self):

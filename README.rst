@@ -1,3 +1,7 @@
+.. image:: https://travis-ci.org/clytwynec/django-html5validator.svg?branch=master
+    :target: https://travis-ci.org/clytwynec/django-html5validator
+
+
 Installation
 ------------
 
