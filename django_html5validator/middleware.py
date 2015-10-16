@@ -45,17 +45,24 @@ class DjangoHTML5Validator(object):
         messages. An `html` folder will be created in the same directory and
         will contain the html content that has validation issues.
         """
-        content_type = response["content-type"].lower()
+        try:
+            content_type = response["content-type"].lower()
+        except TypeError:
+            content_type = response.headers["content-type"].lower()
+
         if "text/html" in content_type and response.content:
-            html_file = os.path.join(
+
+            html_file_path = os.path.join(
                 self.html_dir,
                 slugify(request.path) + '.html'
             )
-            with open(html_file, 'w') as f:
-                f.write(response.content)
-                error_count = Validator().validate(files=[f.name])
+            with open(html_file_path, 'w') as html_file:
+                html_file.write(response.content)
+                file_name = html_file.name
+
+            error_count = Validator().validate(files=[file_name])
 
             if error_count == 0:
-                os.remove(html_file)
+                os.remove(html_file_path)
 
         return response
