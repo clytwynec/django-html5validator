@@ -25,6 +25,27 @@ settings.configure(
     },
 )
 
+LONG_FILENAME = "abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghij"\
+    "1abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "2abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "3abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "4abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "5abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "6abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "7abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "8abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "9abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstuv"\
+    "10abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstu"\
+    "11abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstu"\
+    "12abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnopqrstu"\
+    "13abcd-efghijkl.html"\
+
+TRUNCATED_FILENAME = "abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-e"\
+    "fghij1abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmnop"\
+    "qrstuv2abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmno"\
+    "pqrstuv3abcd-efghijklmnopqrstuv-wxyz-12345-6-7-89-abcd-efghijklmn"\
+    "opqrstu.html"
+
 
 class DjangoHTML5ValidatorTestCase(TestCase):
     """
@@ -107,6 +128,29 @@ class DjangoHTML5ValidatorTestCase(TestCase):
             "error: Start tag seen without seeing a doctype first",
             reported_errors
         )
+
+    @httpretty.activate
+    def test_process_response_long_filename(self):
+        """
+        Test process_response method with a file path that needs to
+        be truncated.
+        """
+        self.request.path = LONG_FILENAME
+        url = "http://localhost:8000/{}".format(self.request.path)
+
+        httpretty.register_uri(
+            httpretty.GET,
+            url,
+            body="<asdfghjkl></asdfghjkl>",
+            content_type="text/html")
+
+        response = requests.get(url)
+
+        validator = DjangoHTML5Validator()
+        validator.process_response(self.request, response)
+
+        html_file = os.path.join(self.html_dir, TRUNCATED_FILENAME)
+        self.assertTrue(os.path.isfile(html_file))
 
     @httpretty.activate
     def test_process_response_no_errors(self):

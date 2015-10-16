@@ -54,7 +54,7 @@ class DjangoHTML5Validator(object):
 
             html_file_path = os.path.join(
                 self.html_dir,
-                slugify(request.path) + '.html'
+                slugify(request.path, max_length=250) + '.html'
             )
             with open(html_file_path, 'w') as html_file:
                 html_file.write(response.content)
