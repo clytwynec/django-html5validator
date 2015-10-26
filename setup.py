@@ -7,6 +7,7 @@ setup(
     packages = find_packages(exclude=['tests', 'tests.*']),
     license='Apache 2.0',
     install_requires = [
+        'APScheduler>=3.0.4',
         'django',
         'html5validator>=0.1.14',
         'python-slugify>=1.1.4',
