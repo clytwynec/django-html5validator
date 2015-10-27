@@ -9,8 +9,11 @@ setup(
     install_requires = [
         'APScheduler>=3.0.4',
         'django',
-        'html5validator>=0.1.14',
+        'html5validator',
         'python-slugify>=1.1.4',
+    ],
+    dependency_links=[
+        "git+https://github.com/clytwynec/html5validator.git@master#egg=html5validator",
     ],
     # metadata for upload to PyPI
     author = "Christine Lytwynec",
